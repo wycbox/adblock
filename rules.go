@@ -9,7 +9,7 @@ var RuleFiles = []RuleFile{
 var (
 	AdblockStable  = Rules{AdblockDNS, Adblock1, Adblock2}
 	AdblockPreview = Rules{AdblockDNS, Adblock4, Adblock5}
-	AdblockTest    = Rules{AdblockDNS, Adblock4, Adblock5}
+	AdblockTest    = Rules{AdblockDNS, Adblock4, Adblock5, Adblock6}
 )
 
 var AdblockDNS = newFile(
@@ -40,4 +40,9 @@ var Adblock4 = newFile(
 var Adblock5 = newFile(
 	"https://raw.githubusercontent.com/lingeringsound/10007_auto/master/all",
 	hostsParser("0.0.0.0"),
+)
+
+var Adblock6 = newFile(
+	"https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Dnsmasq.conf",
+	dnsmasqParser,
 )
