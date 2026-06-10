@@ -118,10 +118,28 @@ func aggregateRules(ctx context.Context, rules Rules) ([]string, error) {
 
 	domains := make([]string, 0, len(seen))
 	for domain := range seen {
+		if hasMatchedSuffix(domain, seen) {
+			continue
+		}
 		domains = append(domains, domain)
 	}
 	sort.Strings(domains)
 	return domains, nil
+}
+
+func hasMatchedSuffix(domain string, seen map[string]struct{}) bool {
+	for i := strings.IndexByte(domain, '.'); i >= 0; {
+		suffix := domain[i+1:]
+		if _, ok := seen[suffix]; ok {
+			return true
+		}
+		next := strings.IndexByte(suffix, '.')
+		if next < 0 {
+			break
+		}
+		i += next + 1
+	}
+	return false
 }
 
 func loadRule(ctx context.Context, rule Rule) ([]string, error) {
