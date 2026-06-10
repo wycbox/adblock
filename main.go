@@ -34,6 +34,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
+	generatedAt := time.Now().In(time.FixedZone("CST", 8*60*60)).Format("2006-01-02 15:04:05")
 	for _, ruleFile := range RuleFiles {
 		domains, err := aggregateRules(ctx, ruleFile.Rules)
 		if err != nil {
@@ -42,7 +43,7 @@ func main() {
 		}
 
 		output := filepath.Join("rules", ruleFile.Filename)
-		if err := writeDomains(output, domains); err != nil {
+		if err := writeDomains(output, generatedAt, ruleFile.Filename, domains); err != nil {
 			fmt.Fprintf(os.Stderr, "写入 %s 失败: %v\n", output, err)
 			os.Exit(1)
 		}
@@ -228,12 +229,14 @@ func validDomain(domain string) bool {
 	return true
 }
 
-func writeDomains(path string, domains []string) error {
+func writeDomains(path string, generatedAt string, version string, domains []string) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
 
 	var data bytes.Buffer
+	fmt.Fprintf(&data, "#生成时间: %s\n", generatedAt)
+	fmt.Fprintf(&data, "#版本: %s\n", version)
 	for _, domain := range domains {
 		fmt.Fprintf(&data, "%s\n", domain)
 	}
